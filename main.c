@@ -135,7 +135,7 @@ void insercao_reg(char *novo_reg, FILE *arq_dados)
     if(led->cabeca->offset == -1 || led->cabeca->tam_reg < novo_tam) {
         // caso a LED esteja vazia ou o novo registro for maior do que os espaços livres
         fseek(arq_dados, 0, SEEK_END);
-        fwrite(novo_tam, sizeof(short), 1, arq_dados);
+        fwrite(&novo_tam, sizeof(short), 1, arq_dados);
         fwrite(novo_reg, novo_tam, 1, arq_dados);
         printf("\nLocal: Fim do arquivo");
     } else {
@@ -143,7 +143,7 @@ void insercao_reg(char *novo_reg, FILE *arq_dados)
         if((led->cabeca->tam_reg - novo_tam) <= LIMIAR_INSERCAO) {
             // se o espaço que sobrar for menor ou igual que o limiar de excessão
             // não precisa da reinserção na LED
-            fwrite(novo_tam, sizeof(short), 1, arq_dados);
+            fwrite(&novo_tam, sizeof(short), 1, arq_dados);
             fwrite(novo_reg, novo_tam, 1, arq_dados);
             fwrite('\0', sizeof(char), (led->cabeca->tam_reg - novo_tam), arq_dados); // '\0' na fragmentação
             printf("Tamanho de espaco reutilizado: %i bytes", led->cabeca->tam_reg);
@@ -153,7 +153,7 @@ void insercao_reg(char *novo_reg, FILE *arq_dados)
             escreve_led(led, arq_dados); // escreve a nova LED no arquivo
         } else {
             // reinserção na LED
-            fwrite(novo_tam, sizeof(short), 1, arq_dados);
+            fwrite(&novo_tam, sizeof(short), 1, arq_dados);
             fwrite(novo_reg, novo_tam, 1, arq_dados);
             printf("Tamanho de espaco reutilizado: %i bytes (Sobre de %i bytes)", led->cabeca->tam_reg, (led->cabeca->tam_reg - novo_tam));
             printf("Local: offset = %i bytes (0x%x)\n", led->cabeca->offset, led->cabeca->offset);
