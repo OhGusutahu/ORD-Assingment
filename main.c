@@ -103,23 +103,30 @@ int busca_reg(char *IDENTIFICADOR, FILE *arq_dados)
     // retorna a posição do registro no arquivo ou 0 caso não encontre
     fseek(arq_dados, sizeof(int), SEEK_SET); // passar cabeçalho
     short tamanho; // tamanho do registro
-    int i = 0;
+    int i;
     char c, chave_prim[64], buffer[512];
 
-    while(fpeek(arq_dados) != EOF) {
-        fread(&tamanho, sizeof(short), 1, arq_dados);
-        while(c = fgetc(arq_dados), c != '|' && c != '*') { // se c == '*' então o registro foi removido
+    while(/*fpeek(arq_dados) != EOF*/fread(&tamanho, sizeof(short), 1, arq_dados) == 1) {
+        i = 0;
+        c = fgetc(arq_dados);
+
+        while(c != '|' && c != '*') { // se c == '*' então o registro foi removido
             chave_prim[i] = c;
             i++;
+            c = fgetc(arq_dados);
         }
+        i++;
+
         if(c == '*') chave_prim[0] = '\0'; // se c == '*' então "limpa" chave_prim
-        chave_prim[++i] = '\0';
+        chave_prim[i] = '\0';
+
         if(strcmp(chave_prim, IDENTIFICADOR) == 0) {
             return ftell(arq_dados) - i - 2; // retorna a posição do registro
         } else {
             fseek(arq_dados, tamanho - i, SEEK_CUR); // L/E vai para o próximo registro
         }
     }
+    
     return 0;
 }
 
