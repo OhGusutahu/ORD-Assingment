@@ -36,7 +36,6 @@ void imprime_led(FILE *arq_dados);
 // auxiliares
 void le_led(LED *led, FILE *arq_dados);
 void escreve_led(LED *led, FILE *arq_dados);
-char fpeek(FILE *arq_dados);
 
 int main(int argc, char *argv[])
 {
@@ -88,15 +87,6 @@ operacao op_leitura(FILE *op_arq)
     return op;
 }
 
-char fpeek(FILE *arq_dados)
-{
-    // função auxiliar para busca
-    char c = fgetc(arq_dados);
-    ungetc(c, arq_dados);
-
-    return c;
-}
-
 int busca_reg(char *IDENTIFICADOR, FILE *arq_dados)
 {
     // busca de registro através da chave primária
@@ -106,7 +96,7 @@ int busca_reg(char *IDENTIFICADOR, FILE *arq_dados)
     int i;
     char c, chave_prim[64], buffer[512];
 
-    while(/*fpeek(arq_dados) != EOF*/fread(&tamanho, sizeof(short), 1, arq_dados) == 1) {
+    while(fread(&tamanho, sizeof(short), 1, arq_dados) == 1) {
         i = 0;
         c = fgetc(arq_dados);
 
